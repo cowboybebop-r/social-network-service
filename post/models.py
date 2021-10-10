@@ -6,7 +6,7 @@ from core.mixins import Timestamps
 
 
 class Post(Timestamps):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('User'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('Author'))
     title = models.CharField(_('Title'), max_length=255)
     content = models.TextField(_('Content'))
 
@@ -21,7 +21,7 @@ class Post(Timestamps):
 class PostRate(Timestamps):
     liked = models.BooleanField(null=True)
     liked_post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    liked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    liked_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('Liked by'))
 
     def __str__(self):
         return f'{self.liked_post}: {self.liked}'
