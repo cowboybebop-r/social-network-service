@@ -1,3 +1,12 @@
 from django.contrib import admin
+from .models import Post, PostRate
 
-# Register your models here.
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(PostRate)
+class PostRateAdmin(admin.ModelAdmin):
+    pass
