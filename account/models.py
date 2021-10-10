@@ -2,8 +2,9 @@ from datetime import datetime, timedelta
 
 import jwt
 from django.conf import settings
-from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -41,13 +42,12 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(username, email, gender, password)
         user.is_superuser = True
-        user.is_staff = True
         user.save()
 
         return user
 
 
-class User(AbstractUser, Timestamps):
+class User(AbstractBaseUser, PermissionsMixin, Timestamps):
     class GENDER:
         MALE = 'Male'
         FEMALE = 'Female'
@@ -59,35 +59,18 @@ class User(AbstractUser, Timestamps):
             (OTHER, _('Other')),
         )
 
+    username = models.CharField(_('Username'), max_length=50, unique=True, validators=[UnicodeUsernameValidator(), ],
+                                error_messages={'unique': _('User with username already exists.')},
+                                help_text=_('Required. 50 characters or fewer. Letters, digits and @/./+/-/_ only.'), )
     email = models.EmailField(_('Email'), unique=True)
     gender = models.CharField(max_length=20, choices=GENDER.GENDERS)
     image = models.ImageField(_('Profile Image'), upload_to='profileimages/', blank=True)
 
+    USERNAME_FIELD = 'username'
+
     REQUIRED_FIELDS = ['email', 'gender']
 
     objects = UserManager()
-
-    # @property
-    # def token(self):
-    #     """
-    #     Allows to get a user's token by calling `user.token` instead of
-    #     `user.generate_jwt_token().
-    #     """
-    #     return self._generate_jwt_token()
-    #
-    # def _generate_jwt_token(self):
-    #     """
-    #     Generates a JSON Web Token that stores this user's ID and has an expiry
-    #     date set to 60 days into the future.
-    #     """
-    #     dt = datetime.now() + timedelta(days=30)
-    #
-    #     token = jwt.encode({
-    #         'id': self.pk,
-    #         'exp': int(dt.strftime('%s'))
-    #     }, settings.SECRET_KEY, algorithm='HS256')
-    #
-    #     return token.decode('utf-8')
 
     def __str__(self):
         return self.username
