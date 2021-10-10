@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from core.mixins import Timestamps
 
 
-class Profile(Timestamps):
+class Profile(AbstractUser, Timestamps):
     class GENDER:
         MALE = 'Male'
         FEMALE = 'Female'
