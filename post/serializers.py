@@ -6,7 +6,11 @@ from .models import Post, PostRate
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
-        fields = '__all__'
+        fields = ('id', 'user', 'title', 'content', 'create_at', 'update_at')
+
+    def create(self, validated_data):
+        instance = self.Meta.model.objects.create(**validated_data)
+        return instance
 
 
 class PostRateSerializer(serializers.ModelSerializer):
