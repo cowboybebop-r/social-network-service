@@ -1,11 +1,18 @@
+from collections import Counter
+from itertools import groupby
+
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from django_filters import rest_framework as filters
+
+from .filters import DateRangeFilterSet
 from .permissions import IsPostOwner
 from .serializers import PostSerializer
 from .models import Post, PostRate
@@ -60,3 +67,36 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
             'total_dislikes': PostRate.objects.filter(liked=False, liked_post=post).count()
         }
         return JsonResponse(data)
+
+
+class AnalyticView(GenericAPIView):
+    queryset = PostRate.objects.all()
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = DateRangeFilterSet
+
+    def get(self, request, format=None):
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+
+        ordered_queryset = filtered_queryset.order_by('create_at')
+        likes_by_date = groupby(ordered_queryset,
+                                lambda like: like.create_at.strftime("%Y-%m-%d"))
+
+        analytics = []
+        for date, likes in likes_by_date:
+            count = Counter(like.liked for like in likes)
+            analytics.append(
+                {
+                    'date': date,
+                    'total_likes': count,
+
+                }
+            )
+        if len(analytics) == 0:
+            analytics.append(
+                {
+                    'message': 'No likes in this interval'
+                }
+            )
+
+        return Response(analytics)
