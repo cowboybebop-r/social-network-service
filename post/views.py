@@ -85,11 +85,11 @@ class AnalyticView(GenericAPIView):
         analytics = []
         for date, likes in likes_by_date:
             count = Counter(like.liked for like in likes)
+            print(count.get(True))
             analytics.append(
                 {
                     'date': date,
-                    'total_likes': count,
-
+                    'total_likes': count.get(True),
                 }
             )
         if len(analytics) == 0:
