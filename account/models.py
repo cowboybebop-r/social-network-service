@@ -42,6 +42,7 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(username, email, gender, password)
         user.is_superuser = True
+        user.is_staff = True
         user.save()
 
         return user
@@ -65,6 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin, Timestamps):
     email = models.EmailField(_('Email'), unique=True)
     gender = models.CharField(max_length=20, choices=GENDER.GENDERS)
     image = models.ImageField(_('Profile Image'), upload_to='profileimages/', blank=True)
+    is_staff = models.BooleanField(_('Is staff'), default=False)
 
     USERNAME_FIELD = 'username'
 
