@@ -4,6 +4,6 @@ from . import views
 
 router = DefaultRouter()
 
-router.register('posts', views.PostRetrieveListView, basename='posts-api')
+router.register('posts', views.PostCreateRetrieveListView, basename='posts-api')
 
 urlpatterns = router.urls

@@ -12,16 +12,16 @@ from .models import Post, PostRate
 from account.models import User
 
 
-class PostRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMixin, CreateModelMixin):
+class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMixin, CreateModelMixin):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
     permission_classes = [IsAuthenticatedOrReadOnly, IsPostOwner]
 
     def list(self, request, *args, **kwargs):
-        return super(PostRetrieveListView, self).list(request, *args, **kwargs)
+        return super(PostCreateRetrieveListView, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        return super(PostRetrieveListView, self).retrieve(request, *args, **kwargs)
+        return super(PostCreateRetrieveListView, self).retrieve(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
         user = request.user
