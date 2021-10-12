@@ -25,7 +25,6 @@ INSTALLED_APPS = [
 
     # Apps
     'post',
-    'changelog',
     'account',
 
     # Third-party apps
@@ -45,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     # Custom
-    'changelog.middleware.LastRequestMiddleware'
+    'account.middleware.LastRequestMiddleware'
 ]
 
 ROOT_URLCONF = 'core.urls'

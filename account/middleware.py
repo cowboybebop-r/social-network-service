@@ -1,7 +1,7 @@
 from django.utils.timezone import now
 from rest_framework_simplejwt import authentication
 
-from .models import RequestLog
+from account.models import User
 
 
 class LastRequestMiddleware(object):
@@ -22,5 +22,6 @@ class LastRequestMiddleware(object):
             request.user = authentication.JWTAuthentication().authenticate(request)[0]
         except Exception as ex:
             print(ex)
+
         if not request.user.is_anonymous:
-            RequestLog.objects.update_or_create(user=request.user, last_request=now())
+            User.objects.filter(pk=request.user.pk).update(last_request=now())

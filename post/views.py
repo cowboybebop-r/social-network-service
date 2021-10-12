@@ -58,7 +58,7 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
 
     @action(methods=['post'], detail=True)
     @permission_classes([IsAuthenticated])
-    def unlike(self, request, *args, **kwargs):
+    def dislike(self, request, *args, **kwargs):
         user = User.objects.get(pk=request.user.pk)
         post = self.get_object()
         obj, created = PostRate.objects.get_or_create(liked_by=user, liked_post=post)

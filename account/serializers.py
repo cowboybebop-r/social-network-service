@@ -27,6 +27,7 @@ class CustomTokenObtainPairSerializer(TokenObtainSerializer):
     """
     Custom Token Serializer for additional user data for resp.
     """
+
     @classmethod
     def get_token(cls, user):
         # implementing `get_token` method for `TokenObtainSerializer` subclass
@@ -46,3 +47,9 @@ class CustomTokenObtainPairSerializer(TokenObtainSerializer):
             update_last_login(None, self.user)
 
         return data
+
+
+class UserLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'last_login', 'last_request')

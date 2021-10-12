@@ -1,25 +1,23 @@
+from django.contrib.auth.models import update_last_login
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from rest_framework_simplejwt.authentication import AUTH_HEADER_TYPES
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework_simplejwt.views import TokenViewBase
 
-from .serializers import RegistrationSerializer, CustomTokenObtainPairSerializer
+from .models import User
+from .serializers import RegistrationSerializer, CustomTokenObtainPairSerializer, UserLogSerializer
 
 
-class RegistrationAPIView(APIView):
-    # Allow any user (authenticated or not) to hit this endpoint.
+class RegistrationView(GenericViewSet, CreateModelMixin):
     permission_classes = (AllowAny,)
     serializer_class = RegistrationSerializer
 
-    def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def create(self, request, *args, **kwargs):
+        return super(RegistrationView, self).create(request, *args, **kwargs)
 
 
 class LoginView(TokenViewBase):
@@ -40,11 +38,21 @@ class LoginView(TokenViewBase):
         )
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-
+        result = super(LoginView, self).post(request, *args, **kwargs)
         try:
-            serializer.is_valid(raise_exception=True)
-        except TokenError as e:
-            raise InvalidToken(e.args[0])
+            user = User.objects.get(id=result.data['user_id'])
+            update_last_login(None, user)
+        except Exception as ex:
+            return print(ex)
+        return result
 
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+
+class UserLogView(GenericViewSet, ListModelMixin, RetrieveModelMixin):
+    queryset = User.objects.all()
+    serializer_class = UserLogSerializer
+
+    def list(self, request, *args, **kwargs):
+        return super(UserLogView, self).list(request, *args, **kwargs)
+
+    def retrieve(self, request, *args, **kwargs):
+        return super(UserLogView, self).retrieve(request, *args, **kwargs)

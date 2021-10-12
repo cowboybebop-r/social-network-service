@@ -1,4 +1,5 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.models import User
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
@@ -62,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin, Timestamps):
     gender = models.CharField(max_length=20, choices=GENDER.GENDERS)
     image = models.ImageField(_('Profile Image'), upload_to='profileimages/', blank=True)
     is_staff = models.BooleanField(_('Is staff'), default=False)
+    last_request = models.DateTimeField(_('Last request'), null=True)
 
     USERNAME_FIELD = 'username'
 
