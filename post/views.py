@@ -45,9 +45,8 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
         user = User.objects.get(pk=request.user.pk)
         post = self.get_object()
         obj, created = PostRate.objects.get_or_create(liked_by=user, liked_post=post)
-        if not created:
-            obj.liked = True
-            obj.save()
+        obj.liked = True
+        obj.save()
         data = {
             'total_likes': PostRate.objects.filter(liked=True, liked_post=post).count(),
             'total_dislikes': PostRate.objects.filter(liked=False, liked_post=post).count()
@@ -57,11 +56,11 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
     @action(methods=['post'], detail=True)
     def unlike(self, request, *args, **kwargs):
         user = User.objects.get(pk=request.user.pk)
+        print(user, 1111111111)
         post = self.get_object()
         obj, created = PostRate.objects.get_or_create(liked_by=user, liked_post=post)
-        if not created:
-            obj.liked = False
-            obj.save()
+        obj.liked = False
+        obj.save()
         data = {
             'total_likes': PostRate.objects.filter(liked=True, liked_post=post).count(),
             'total_dislikes': PostRate.objects.filter(liked=False, liked_post=post).count()
@@ -85,7 +84,6 @@ class AnalyticView(GenericAPIView):
         analytics = []
         for date, likes in likes_by_date:
             count = Counter(like.liked for like in likes)
-            print(count.get(True))
             analytics.append(
                 {
                     'date': date,

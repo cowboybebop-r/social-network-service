@@ -1,7 +1,3 @@
-from datetime import datetime, timedelta
-
-import jwt
-from django.conf import settings
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.validators import UnicodeUsernameValidator
