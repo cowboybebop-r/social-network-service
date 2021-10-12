@@ -1,7 +1,6 @@
 from django.utils.timezone import now
 from rest_framework_simplejwt import authentication
 
-from account.models import User
 from .models import RequestLog
 
 

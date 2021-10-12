@@ -3,10 +3,10 @@ from itertools import groupby
 
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework.decorators import action, permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin, CreateModelMixin
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
@@ -22,14 +22,16 @@ from account.models import User
 class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMixin, CreateModelMixin):
     serializer_class = PostSerializer
     queryset = Post.objects.all()
-    permission_classes = [IsAuthenticatedOrReadOnly, IsPostOwner]
 
+    @permission_classes([IsAuthenticatedOrReadOnly])
     def list(self, request, *args, **kwargs):
         return super(PostCreateRetrieveListView, self).list(request, *args, **kwargs)
 
+    @permission_classes([IsAuthenticatedOrReadOnly])
     def retrieve(self, request, *args, **kwargs):
         return super(PostCreateRetrieveListView, self).retrieve(request, *args, **kwargs)
 
+    @permission_classes([IsPostOwner])
     def create(self, request, *args, **kwargs):
         user = request.user
         data = request.data.copy()
@@ -41,6 +43,7 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(methods=['post'], detail=True)
+    @permission_classes([IsAuthenticated])
     def like(self, request, *args, **kwargs):
         user = User.objects.get(pk=request.user.pk)
         post = self.get_object()
@@ -54,9 +57,9 @@ class PostCreateRetrieveListView(GenericViewSet, RetrieveModelMixin, ListModelMi
         return JsonResponse(data)
 
     @action(methods=['post'], detail=True)
+    @permission_classes([IsAuthenticated])
     def unlike(self, request, *args, **kwargs):
         user = User.objects.get(pk=request.user.pk)
-        print(user, 1111111111)
         post = self.get_object()
         obj, created = PostRate.objects.get_or_create(liked_by=user, liked_post=post)
         obj.liked = False

@@ -24,9 +24,9 @@ class UserManager(BaseUserManager):
             raise ValueError(_('Please select gender from the given options.'))
 
         user = self.model(username=username, gender=gender, email=self.normalize_email(email))
+        user.is_staff = True
         user.set_password(password)
         user.save()
-
         return user
 
     def create_superuser(self, username, email, gender, password):
@@ -38,7 +38,6 @@ class UserManager(BaseUserManager):
 
         user = self.create_user(username, email, gender, password)
         user.is_superuser = True
-        user.is_staff = True
         user.save()
 
         return user
