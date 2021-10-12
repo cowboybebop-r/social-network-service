@@ -23,6 +23,9 @@ class RegistrationAPIView(APIView):
 
 
 class LoginView(TokenViewBase):
+    """
+    Token View with custom token serializer
+    """
     permission_classes = ()
     authentication_classes = ()
 

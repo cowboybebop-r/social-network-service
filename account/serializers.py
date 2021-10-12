@@ -24,7 +24,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainSerializer):
-
+    """
+    Custom Token Serializer for additional user data for resp.
+    """
     @classmethod
     def get_token(cls, user):
         # implementing `get_token` method for `TokenObtainSerializer` subclass
