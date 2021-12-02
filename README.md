@@ -1,5 +1,3 @@
-# Test Project
-
 ## Install
 
 1. Apply environment variables:
